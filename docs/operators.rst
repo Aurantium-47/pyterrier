@@ -296,6 +296,8 @@ as the minimum difference between the least ranked document from topdocs and the
 ordering of documents from alldocs is unchanged, but the gaps between their scores are maintained, so the difference between d03 and d01
 is a score delta of -1 in both alldocs and finaldocs. 
 
+If a query has no results from ``topdocs``, all of its results from ``alldocs`` are retained with their original scores.
+
 Feature Union (`**`)
 --------------------
 

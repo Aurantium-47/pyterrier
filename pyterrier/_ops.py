@@ -157,8 +157,10 @@ class Concatenate(Transformer):
         # from res1
         first_scores = remainder[['qid', 'score']].groupby('qid').max().rename(columns={"score" : "_firstscore"})
 
-        remainder = remainder.merge(last_scores, on=["qid"]).merge(first_scores, on=["qid"])
-        remainder["score"] = remainder["score"] - remainder["_firstscore"] + remainder["_lastscore"] - self.epsilon
+        remainder = remainder.merge(last_scores, on=["qid"], how="left").merge(first_scores, on=["qid"])
+        shifted_score = remainder["score"] - remainder["_firstscore"] + remainder["_lastscore"] - self.epsilon
+        # Queries with no results on the left keep their original scores.
+        remainder["score"] = shifted_score.where(remainder["_lastscore"].notna(), remainder["score"])
         remainder = remainder.drop(columns=["_lastscore",  "_firstscore"])
 
         # now bring together and re-sort
